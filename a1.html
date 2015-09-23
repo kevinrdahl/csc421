@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>CSC 421 Assignment 1</title>
+        <style>
+            html,body {
+                height:100%;
+                padding:0;
+                margin:0;
+                overflow-x:hidden;
+                overflow-y:hidden;
+                font-size:small;
+            }
+            #inputdiv {
+                width:200px;
+                height:100%;
+                position:fixed;
+                overflow:hidden;
+                background-color: #333333;
+                color: white;
+                x:0;
+                y:0;
+            }
+            #rightdiv {
+                padding:0;
+                width:calc(100% - 200px);
+                height:100%;
+                overflow:hidden;
+                float:right;
+            }
+            #display {
+                border:2px solid white;
+            }
+        </style>
+    </head>
+    <body onload="initProject();">
+        <div id="inputdiv">
+            INPUT<br/>
+            GOES<br/>
+            HERE
+        </div>
+
+        <div id="rightdiv">
+                <canvas id="display" width=800 height=800></canvas> 
+        </div>
+
+        <script src="js/lib/jsface.min.js"></script>
+        <script src="js/a1.js"></script>
+        <script src="js/node.js"></script>
+    </body>
+</html>

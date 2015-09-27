@@ -35,14 +35,18 @@ function setNeighbors() {
 	var node, otherNode;
 	var closest;
 	var i, j, index;
+	var nodes;
 
 	//for each node...
 	for (i = 0; i < 26; i++) {
+		//copy the list of nodes, for sorting
+		nodes = a1.nodes.slice();
+
 		closest = [];
 		node = a1.nodes[i];
 		node.cost = 0;
 		
-		//set cost of every other node to distance from this node
+		//set the cost of every other node to its distance from this node
 		for (j = 0; j < 26; j++) {
 			if (i == j)
 				continue;
@@ -51,7 +55,7 @@ function setNeighbors() {
 		}
 
 		//sort nodes by cost, ascending
-		a1.nodes.sort(function(a,b) {
+		nodes.sort(function(a,b) {
 			if (a.cost < b.cost)
 				return -1;
 			if (a.cost > b.cost)
@@ -61,13 +65,13 @@ function setNeighbors() {
 
 		//take numClosest nearby nodes (skip first node, since it's this node)
 		for (j = 0; j < numClosest; j++) {
-			otherNode = a1.nodes[j+1];
+			otherNode = nodes[j+1];
 
 			if (node.neighbors.indexOf(otherNode) == -1)
 				closest.push(otherNode);
 		}
 
-		//randomly choose numToChoose from closest (may already have some neighbors from previous iterations)
+		//randomly choose neighbors from closest until this node has numToChoose neighbors
 		while (node.neighbors.length < numToChoose) {
 			index = getRandomIndex(closest.length);
 			otherNode = closest[index];
@@ -76,20 +80,7 @@ function setNeighbors() {
 			node.neighbors.push(otherNode);
 			otherNode.neighbors.push(node);
 		}
-
-		resortNodes();
 	}
-}
-
-function resortNodes() {
-	//sort nodes by name for prettier printing
-	a1.nodes.sort(function(a,b) {
-		if (a.name < b.name)
-			return -1;
-		if (a.name > b.name)
-			return 1;
-		return 0;
-	});
 }
 
 function drawInstance() {

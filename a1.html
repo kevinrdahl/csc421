@@ -11,6 +11,7 @@
                 overflow-x:hidden;
                 overflow-y:hidden;
                 font-size:small;
+                font-family: Tahoma, Geneva, sans-serif;
             }
             #inputdiv {
                 width:200px;
@@ -36,9 +37,27 @@
     </head>
     <body onload="initProject();">
         <div id="inputdiv">
-            INPUT<br/>
-            GOES<br/>
-            HERE
+            <h2>Super Path Thing</h2>
+            <button id="btn_generate">Generate</button>
+            <br/><br/>
+
+            <strong>Search Mode</strong><br/>
+            <select id="select_mode">
+                <option value="BFS">Breadth-First</option>
+                <option value="DFS">Depth-First</option>
+                <option value="IDS">Iterative Deepening</option>
+            </select>
+            <br/>
+            From <br/>
+            <input id="txt_fromNode" type="text" value="A"></input><br/>
+            To <br/>
+            <input id="txt_toNode" type="text" value="B"></input><br/>
+            <br/>
+
+            <strong>Search</strong><br/>
+            <button id="btn_step">Step</button>
+            <button id="btn_run">Run</button>
+            <button id="btn_reset">Reset</button>
         </div>
 
         <div id="rightdiv">
@@ -48,5 +67,7 @@
         <script src="js/lib/jsface.min.js"></script>
         <script src="js/a1.js"></script>
         <script src="js/node.js"></script>
+        <script src="js/ui.js"></script>
+        <script src="js/draw.js"></script>
     </body>
 </html>

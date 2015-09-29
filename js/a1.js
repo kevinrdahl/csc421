@@ -1,30 +1,55 @@
+var alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
 function initProject() {
 	window.canvas = document.getElementById("display");
 	window.context = canvas.getContext("2d");
-	context.font = "20px monospace";
+	context.font = "18px Arial";
 
 	window.a1 = {
-		scale:8
+		scale:8,
+		mode:'BFS'
 	};
 
+	initUI();
+
 	generateInstance();
-	drawInstance();
 }
 
 function generateInstance() {
 	console.log("generateInstance");
 
-	var alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-	var node;
+	var node, otherNode;
+	var i, j;
 
 	a1.nodes = [];
+	a1.distance = [];
 
-	for (var i = 0; i < 26; i++) {
+	for (i = 0; i < 26; i++) {
 		node = new Node(alphabet[i], [Math.random()*100, Math.random()*100]);
 		a1.nodes.push(node);
 	}
 
+	for (i = 0; i < 26; i++) {
+		node = a1.nodes[i];
+		a1.distance[i] = [];
+		for (j = 0; j < 26; j++) {
+			otherNode = a1.nodes[j];
+			if (i == j) {
+				a1.distance[i].push(0);
+			} else if (i > j) {
+				a1.distance[i].push(a1.distance[j][i]);
+			} else {
+				a1.distance[i].push(vectorDistance(node.coords, otherNode.coords));
+			}
+		}
+	}
+
 	setNeighbors();
+
+
+	startSearch();	
+	drawInstance();
+	drawState();
 }
 
 function setNeighbors() {
@@ -51,7 +76,7 @@ function setNeighbors() {
 			if (i == j)
 				continue;
 			otherNode = a1.nodes[j];
-			otherNode.cost = vectorDistance(node.coords, otherNode.coords);
+			otherNode.cost = a1.distance[i][j];
 		}
 
 		//sort nodes by cost, ascending
@@ -66,78 +91,74 @@ function setNeighbors() {
 		//take numClosest nearby nodes (skip first node, since it's this node)
 		for (j = 0; j < numClosest; j++) {
 			otherNode = nodes[j+1];
-
-			if (node.neighbors.indexOf(otherNode) == -1)
-				closest.push(otherNode);
+			closest.push(otherNode);
 		}
 
-		//randomly choose neighbors from closest until this node has numToChoose neighbors
-		while (node.neighbors.length < numToChoose) {
+		//randomly select numToChoose neighbors
+		for (j = 0; j < numToChoose; j++){
 			index = getRandomIndex(closest.length);
 			otherNode = closest[index];
 			closest.splice(index,1);
 
-			node.neighbors.push(otherNode);
-			otherNode.neighbors.push(node);
+			connectNodes(node, otherNode);
 		}
 	}
 }
 
-function drawInstance() {
+function connectNodes(n1, n2) {
+	if (n1.neighbors.indexOf(n2) == -1) {
+		n1.neighbors.push(n2);
+		n2.neighbors.push(n1);
+	}
+}
+
+function startSearch() {
+	a1.currentNode = getNodeByName(getFromNode());
+	a1.targetNode = getNodeByName(getToNode());
+
+	for (var i = 0; i < a1.nodes.length; i++) {
+		a1.nodes[i].cost = -1;
+	}
+	a1.currentNode.cost = 0;
+
+	switch(a1.mode) {
+		case "BFS":
+			a1.toVisit = [];
+			break;
+		default:
+			break;
+	}
+}
+
+function stepSearch(draw) {
+	draw = (typeof draw === 'undefined') ? true : draw;
+
 	var i, j;
 	var node, otherNode;
-	var coords;
 
-	context.clearRect(0, 0, canvas.width, canvas.height);
+	switch(a1.mode) {
+		case "BFS":
+			for (i = 0; i < a1.currentNode.neighbors.length; i++) {
+				node = a1.currentNode.neighbors[i];
+				if (a1.toVisit.indexOf(node) == -1) {
+					a1.toVisit.push(node);
+				}
 
-	//for each node...
-	for (i = 0; i < a1.nodes.length; i++) {
-		node = a1.nodes[i];
-
-		console.log(node.toString());
-
-		//draw it
-		drawNode(node, "black");
-
-		//draw connections to its neighbors (these will be drawn twice but oh well)
-		for (j = 0; j < node.neighbors.length; j++) {
-			drawEdge(node, node.neighbors[j], "black");
-		}
+			}
 	}
 
-	//draw names (so they're on top)
-	context.fillStyle = "red";
-	//context.strokeStyle = "black";
-	//context.lineWidth = 1;
-	console.log()
-
-	for (i = 0; i < a1.nodes.length; i++) {
-		node = a1.nodes[i];
-		coords = [
-			Math.min(Math.round(node.coords[0]*a1.scale + a1.scale/2), a1.scale*100 - 15), 
-			Math.min(Math.round(node.coords[1]*a1.scale + a1.scale*2), a1.scale*100 - 5)
-		];
-		context.fillText(node.name, coords[0], coords[1]);
-		//context.strokeText("(" + node.name + ")", coords[0], coords[1]);
+	if (draw) {
+		drawState();
 	}
 }
 
-function drawState() {
+function runSearch() {
 
 }
 
-function drawNode(node, style) {
-	context.fillStyle = style;
-	context.fillRect(Math.round((node.coords[0]-0.5)*a1.scale), Math.round((node.coords[1]-0.5)*a1.scale), a1.scale, a1.scale);
-}
-
-function drawEdge(node1, node2, style) {
-	context.strokeStyle = style;
-	context.lineWidth = Math.max(1, Math.round(a1.scale/4));
-	context.beginPath();
-	context.moveTo(Math.round(node1.coords[0]*a1.scale), Math.round(node1.coords[1]*a1.scale));
-	context.lineTo(Math.round(node2.coords[0]*a1.scale), Math.round(node2.coords[1]*a1.scale));
-	context.stroke();
+function getNodeByName(name) {
+	var index = alphabet.indexOf(name);
+	return a1.nodes[index];
 }
 
 function vectorDistance(v1, v2) {

@@ -10,7 +10,7 @@ function drawInstance() {
 	for (i = 0; i < a1.nodes.length; i++) {
 		node = a1.nodes[i];
 
-		console.log(node.toString());
+		//console.log(node.toString());
 
 		//draw it
 		drawNode(node, "black");
@@ -27,7 +27,6 @@ function drawInstance() {
 	context.fillStyle = "red";
 	//context.strokeStyle = "black";
 	//context.lineWidth = 1;
-	console.log()
 
 	for (i = 0; i < a1.nodes.length; i++) {
 		node = a1.nodes[i];
@@ -53,6 +52,7 @@ function drawState() {
 	}
 
 	drawNode(a1.targetNode, "red");
+	drawNode(getNodeByName(getFromNode()), "orange");
 }
 
 function drawNode(node, style) {
@@ -69,9 +69,32 @@ function drawEdge(node1, node2, style) {
 	context.stroke();
 }
 
-function stringRound(num, places) {
-	num *= Math.pow(10, places);
-	var str = num.toString().split(".")[0];
+function drawPath(searchNode) {
+	while (searchNode.parent != null) {
+		drawEdge(searchNode.node, searchNode.parent.node, "blue");
+		searchNode = searchNode.parent;
+	}
+}
 
-	return str.substr(0, str.length-places) + "." + str.substr(str.length-places-1, places);
+//ugly!
+function stringRound(num, places) {
+	var split = num.toString().split(".");
+
+	if (split.length == 2) {
+		var str = split[0] + ".";
+
+		if (split[1].length <= places) {
+			str += split[1];
+		} else {
+			var str2 = Math.round(parseFloat(split[1].substr(0,places) + "." + split[1].substr(places))).toString();
+			for (var i = places - str2.length; i > 0; i--) {
+				str += "0";
+			}
+			str += str2;
+		}
+
+		return str;
+	} else {
+		return split[0];
+	}
 }

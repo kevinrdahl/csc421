@@ -37,7 +37,7 @@
     </head>
     <body onload="initProject();">
         <div id="inputdiv">
-            <h2>Super Path Thing</h2>
+            <h2>Path GUI Thing</h2>
             <button id="btn_generate">Generate</button>
             <br/><br/>
 
@@ -46,8 +46,16 @@
                 <option value="BFS">Breadth-First</option>
                 <option value="DFS">Depth-First</option>
                 <option value="IDS">Iterative Deepening</option>
+                <option value="GBFS">Greedy Best-First</option>
+                <option value="A*">A*</option>
             </select>
             <br/>
+            <strong>Heuristic</strong><br/>
+            <select id="select_heuristic">
+                <option value="distance">Euclidean Distance</option>
+                <option value="minXY">Min(dX, dY)</option>
+            </select>
+            <br/><br/>
             From <br/>
             <input id="txt_fromNode" type="text" value="A"></input><br/>
             To <br/>
@@ -55,13 +63,17 @@
             <br/>
 
             <strong>Search</strong><br/>
-            <button id="btn_step">Step</button>
+            <button id="btn_step" disabled>Step</button>
             <button id="btn_run">Run</button>
             <button id="btn_reset">Reset</button>
+
+            <br/><br/>
+            <button id="btn_stats">Run 100</button>
+            <button id="btn_runNew">Run New</button>
         </div>
 
         <div id="rightdiv">
-                <canvas id="display" width=800 height=800></canvas> 
+                <canvas id="display" width=900 height=900></canvas> 
         </div>
 
         <script src="js/lib/jsface.min.js"></script>
